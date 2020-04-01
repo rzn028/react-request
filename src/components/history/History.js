@@ -11,7 +11,7 @@ class History extends React.Component{
                     <h6>{method} Requests</h6>
                     {
                     Object.keys(this.props.history[method]).map((url) => (
-                        <HeaderItem
+                        <HistoryItem
                             method={method}
                             url={url}
                             removeHistoryItem={this.props.removeHistoryItem}
@@ -27,11 +27,8 @@ class History extends React.Component{
     }
 }
 
-const some = (method, url) => {
-    console.log(method + " : " + url);
-}
 
-const HeaderItem = (props) => {
+const HistoryItem = (props) => {
 
 
     return(
