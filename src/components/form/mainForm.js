@@ -1,11 +1,14 @@
 import React from 'react';
 import FormHeader from './requestHeader';
 import FormBody from './requestBody';
+import History from '../history/History';
 
 
 class Form extends React.Component {
 
     state = {
+        url: "",
+        method:"",
         history : {},
         headers : {},
         formBody : {},
@@ -35,12 +38,14 @@ class Form extends React.Component {
         let options = {
             method: method,
             headers: {
-                'Origin': 'http://127.0.0.1:8080',
-                'x-requested-with' : 'XMLHttpRequest'
-
+                ...{
+                    'Origin': 'http://127.0.0.1:8080',
+                    'x-requested-with' : 'XMLHttpRequest'
+                },
+                ...this.state.headers
             }
         };
-        if(method === 'POST'){
+        if(method !== 'GET'){
             const body = {...this.state.formBody, ...this.state.jsonBody }
             options['body'] = body;
         }
@@ -85,6 +90,31 @@ class Form extends React.Component {
     }
 
 
+    removeHistoryItem = (method, url) =>{
+
+        let history = this.state.history;
+        delete history[method][url];
+        this.setState({history: history});
+        localStorage.setItem('history', JSON.stringify(history));
+    }
+
+    addFromHistoryItem = (method, url) => {
+
+        const headers = this.state.history[method][url].headers;
+        let body = {}
+        if(method === 'POST'){
+            body = this.state.history[method][url].body;
+        }
+
+        this.setState({
+            headers:headers,
+            formBody:body, 
+            url: url,
+            method:method
+        });
+
+    }
+
     addHeader = (e) => {
         e.preventDefault();
 
@@ -127,7 +157,6 @@ class Form extends React.Component {
 
     deleteFormBodyItem = (formBodyKey) => {
 
-        console.log(formBodyKey);
         let formBody = this.state.formBody;
         delete formBody[formBodyKey];
 
@@ -153,16 +182,32 @@ class Form extends React.Component {
             <div>
             <form onSubmit={this.sendRequest} className="urlForm">
                 <div className="input-group">
-                    <select className="method" name="method">
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="POST">PUT</option>
-                    <option value="POST">DELETE</option>
-
+                    <select 
+                    className="method" 
+                    name="method" 
+                    value={this.state.method}
+                    onChange={ (e) => {
+                        this.setState({method: e.target.value });
+                    }}
+                    >
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="POST">PUT</option>
+                        <option value="POST">DELETE</option>
                     </select>
-                    <input type="url" className="form-control" placeholder="Enter URL" aria-label="Recipient's username" aria-describedby="button-addon2" name="url" required></input>
+                    <input 
+                    type="url" 
+                    className="form-control"    
+                    placeholder="Enter URL" 
+                    aria-describedby="button-addon2" 
+                    value={this.state.url}
+                    onChange={ (e) => {
+                        this.setState({url: e.target.value });
+                    }}
+                    name="url" 
+                    />
                     <div className="input-group-append">
-                    <button className="btn btn-outline-success" type="submit">Send</button>
+                        <button className="btn btn-outline-success" type="submit">Send</button>
                     </div>
                 </div>
             </form>
@@ -181,17 +226,11 @@ class Form extends React.Component {
                 deleteHeaderItem={this.deleteHeaderItem}
             />
 
-            <h5>History</h5>
-            {
-                Object.keys(this.state.history).map((key) => (
-                    <div>
-                    <h6>{key} Requests</h6>
-                    <pre>
-                    {JSON.stringify(this.state.history[key], undefined, 4)}
-                    </pre>
-                    </div>
-                ))
-            }  
+            <History
+                history={this.state.history}
+                removeHistoryItem={this.removeHistoryItem}
+                addFromHistoryItem={this.addFromHistoryItem}
+            />
 
             { this.state.isLoading && <img src="https://codemyui.com/wp-content/uploads/2017/07/fidget-spinner-loading.gif" className="img-fluid" alt="Loading-gif"/>}
 

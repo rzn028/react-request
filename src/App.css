@@ -19,13 +19,14 @@ background: #555;
     border-radius: 5px 0px 0px 5px;
 }
 pre {
-    background-color: ghostwhite;
+    background-color: white;
+    color: rgb(56, 32, 139);
     border: 1px solid silver;
     margin: 20px; 
     max-height: 600px;
     overflow: scroll;
 }
-#root{
+#app{
     margin-top: 7%; 
     max-width: 800px; 
     padding: 30px;
@@ -49,4 +50,11 @@ body{
     background-position: fill;
     background-size: cover;
     background-attachment: fixed;
+}
+
+.requestItem{
+    border: 1px solid #aeaeae;
+    margin: 15px;
+    border-radius: 5px;
+    padding: 10px;
 }
