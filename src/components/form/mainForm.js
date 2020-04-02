@@ -100,10 +100,10 @@ class Form extends React.Component {
 
     addFromHistoryItem = (method, url) => {
 
-        const headers = this.state.history[method][url].headers;
+        const headers = {...this.state.history[method][url].headers};
         let body = {}
         if(method === 'POST'){
-            body = this.state.history[method][url].body;
+            body = {...this.state.history[method][url].body};
         }
 
         this.setState({
